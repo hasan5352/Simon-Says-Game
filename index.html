@@ -3,62 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simon Game</title>
-    <style>
-        body {
-            background-color: #333;
-        }
-        .simon {
-            margin: auto;
-            margin-top: 10%;
-            width: 23rem;
-            height: 23rem;
-            border-radius: 50%;
-            display: flex;
-            flex-wrap: wrap;
-            position: relative;
-            overflow: hidden;
-            border: 5px solid black;
-        }
-        .simon div {
-            cursor: pointer;
-            width: 50%;
-            height: 50%;
-            box-sizing: border-box;
-        }
-        .green { background-color: #00A74A; }
-        .red { background-color: #FF4C4C; }
-        .yellow { background-color: #FED93F; }
-        .blue { background-color: #1C8CFB; }
-        .top{ border-bottom: 5px solid black; }
-        .bottom{ border-top: 5px solid black; }
-        .right{ border-left: 5px solid black; }
-        .left{ border-right: 5px solid black; }
-        .center {
-            position: absolute;
-            left: 20%;
-            top: 21%;
-            z-index: 4;
-            background-color: black;
-            height: 200px;
-            width: 200px;
-            padding: 30%;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 24px;
-        }
-    </style>
+    <title>SimonSays game</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <div class="simon">
-        <div class="green top left"></div>
-        <div class="red top right"></div>
-        <div class="yellow bottom left"></div>
-        <div class="blue bottom right"></div>
-        <div class="center">SIMON</div>
+    <h1>Play And Chill !</h1>
+    <div class="big">
+        <div class="child green"></div>
+        <div class="child red"></div>
+        <div class="child yellow"></div>
+        <div class="child blue"></div>
+        <div class="black">
+            <h3>Simon Says</h3>
+        </div>
     </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
