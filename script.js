@@ -48,7 +48,13 @@ bigDiv.addEventListener("click", function(event){
         num_presses ++;
         if (event.target == sequence[num_presses]){btnFlash(event.target, "flash1");} 
         else if (event.target != sequence[num_presses]){
-            Displayinfo.innerText = `Wrong guess! Click the black button to restart\nPrevious game ended on level ${level}`
+            Displayinfo.innerText = `Wrong guess! Click the black button to restart\nPrevious game ended on level ${level}`;
+            document.body.style.backgroundColor = "red";
+            bigDiv.classList.add("flash3");
+            setTimeout(()=>{
+                bigDiv.classList.add("flash3");
+                document.body.style.backgroundColor = "rgb(90, 81, 81)";
+            }, 300);
             started=false;
             sequence = [];
             num_presses = -1;

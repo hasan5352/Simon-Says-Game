@@ -63,7 +63,7 @@ div{
 }
 .flash3{
     transition: opacity 0.1s;
-    animation: flicker 0.6s ease-in-out 3;
+    animation: flicker 0.3s ease-in-out 3;
 }
 @keyframes flicker {
     0%, 100%{
