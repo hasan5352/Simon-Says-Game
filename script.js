@@ -11,9 +11,14 @@ let userSeq = [];
 let colorBtns = [greenBtn, blueBtn, yellowBtn, redBtn];
 let level = 0;
 
+function incrementLevel(){
+    level++;
+    if (level == 1){Displayinfo.innerText = `Game Started! Level ${level}`;} else {Displayinfo.innerText = `This is Level ${level}`;};
+}
+
 function btnFlash(btn, flashClass){
-    btn.classList.add(flashClass);
-    setTimeout(()=>{btn.classList.remove(flashClass);}, 200);
+    btn.classList.toggle(flashClass);
+    setTimeout(()=>{btn.classList.toggle(flashClass);}, 500);
 }
 
 function flashRandomColor(){
@@ -21,15 +26,13 @@ function flashRandomColor(){
     let randomColor = colorBtns[color_idx];
     btnFlash(randomColor, "flash2");
     sequence.push(randomColor);
-    level++;
-    if (level == 1){Displayinfo.innerText = `Game Started! Level ${level}`;} else {Displayinfo.innerText = `This is Level ${level}`;};
 }
 
 function flashGameSeq(){
     for(let i=0; i<sequence.length; i++){
-        setTimeout(btnFlash(sequence[i], "flash1"), 1000);
+        setTimeout(()=>{btnFlash(sequence[i], "flash1")}, i*1000);
     }
-    setTimeout(flashRandomColor(), 1000);
+    setTimeout(()=>{flashRandomColor()}, sequence.length * 1000);
 }
 
 let started=false;
@@ -39,20 +42,26 @@ bigDiv.addEventListener("click", function(event){
         num_presses ++;
         if (event.target == sequence[num_presses]){btnFlash(event.target, "flash1");} 
         else if (event.target != sequence[num_presses]){
-            Displayinfo.innerText = "Wrong guess! Click the black button to restart"
+            Displayinfo.innerText = `Wrong guess! Click the black button to restart\nPrevious game ended on level ${level}`
             started=false;
             sequence = [];
+            num_presses = -1;
+            level = 0;
         } 
     } 
     else if(!started && event.target == blackBtn){
+            incrementLevel()
             started=true;
             flashRandomColor();
     }
 
     if (started && num_presses == sequence.length-1){
         Displayinfo.innerText = "Nice play! Proceeding to next level...";
-        num_presses = -1;
-        setTimeout(flashGameSeq, 1000);
+        setTimeout(() => {
+            incrementLevel();
+            num_presses = -1;
+            flashGameSeq();
+        }, 1000);
     }
     
 });
