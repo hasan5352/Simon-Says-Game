@@ -1,3 +1,4 @@
+let outerDiv = document.querySelector(".game"); 
 let bigDiv = document.querySelector(".big");
 let greenBtn = document.querySelector(".green");
 let blueBtn = document.querySelector(".blue");
@@ -29,10 +30,15 @@ function flashRandomColor(){
 }
 
 function flashGameSeq(){
+    bigDiv.style.pointerEvents = "none";
+    outerDiv.style.cursor = "not-allowed";
     for(let i=0; i<sequence.length; i++){
         setTimeout(()=>{btnFlash(sequence[i], "flash1")}, i*1000);
     }
-    setTimeout(()=>{flashRandomColor()}, sequence.length * 1000);
+    setTimeout(()=>{
+        flashRandomColor();
+        bigDiv.style.pointerEvents = "auto";
+        outerDiv.style.cursor = "pointer";}, sequence.length * 1000);
 }
 
 let started=false;
