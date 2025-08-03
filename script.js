@@ -94,7 +94,7 @@ function advanceLevel(){
 }
 
 function wrongAnswer(){
-    title.innerText = "Khel Khatam!";
+    title.innerText = "Wrong Answer!";
     flashNTimes(body, 3, "flash-red", 200, 150);
     for (let b of btns) flashNTimes(b, 3, "flash", 200, 150);
 }
