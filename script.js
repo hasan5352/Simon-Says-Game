@@ -1,80 +1,120 @@
-let outerDiv = document.querySelector(".game"); 
-let bigDiv = document.querySelector(".big");
-let greenBtn = document.querySelector(".green");
-let blueBtn = document.querySelector(".blue");
-let yellowBtn = document.querySelector(".yellow");
-let redBtn = document.querySelector(".red");
-let blackBtn = document.querySelector(".black");
-let Displayinfo = document.querySelector("h2");
+"use strict";
 
-let sequence = [];
-let userSeq = [];
-let colorBtns = [greenBtn, blueBtn, yellowBtn, redBtn];
-let level = 0;
-
-function incrementLevel(){
-    level++;
-    if (level == 1){Displayinfo.innerText = `Game Started! Level ${level}`;} else {Displayinfo.innerText = `This is Level ${level}`;};
+let body = document.querySelector("body");
+let black = document.querySelector(".black");
+let title = document.querySelector("h2");
+let highScoreDisplay = document.querySelector(".high-score");
+let scoreDisplay = document.querySelector(".score");
+let btns = []
+for (let b of document.querySelectorAll("main div")) {
+    if (b != black) btns.push(b);
 }
+let seq = [], gameStarted = false, restarting = false;
+let highScore = 0, level = 0;
 
-function btnFlash(btn, flashClass){
-    btn.classList.toggle(flashClass);
-    setTimeout(()=>{btn.classList.toggle(flashClass);}, 500);
+// Restart Game
+function restartGame(){
+    seq = []; gameStarted = false; restarting = true;
+    title.innerText = "Restarting..."; level = 0;
+    black.classList.add("not-allowed-cursor");
+    for (let b of btns){b.classList.add("not-allowed-cursor");}
+
+    setTimeout(() => {
+        black.textContent = "Start!";
+        title.innerText = "Start game by pressing black button!";    
+        scoreDisplay.innerText = "Current Score: 0";
+        black.classList.remove("not-allowed-cursor");
+        for (let b of btns){b.classList.remove("not-allowed-cursor");}
+        restarting = false;
+    }, 1200);
 }
+// Restart Game
+black.addEventListener('dblclick', ()=>{
+    if (!gameStarted) return;
+    restartGame();
+})
 
-function flashRandomColor(){
-    let color_idx = Math.floor(Math.random() * 4);
-    let randomColor = colorBtns[color_idx];
-    btnFlash(randomColor, "flash2");
-    sequence.push(randomColor);
-}
 
-function flashGameSeq(){
-    bigDiv.style.pointerEvents = "none";
-    outerDiv.style.cursor = "not-allowed";
-    for(let i=0; i<sequence.length; i++){
-        setTimeout(()=>{btnFlash(sequence[i], "flash1")}, i*1000);
-    }
-    setTimeout(()=>{
-        flashRandomColor();
-        bigDiv.style.pointerEvents = "auto";
-        outerDiv.style.cursor = "pointer";}, sequence.length * 1000);
-}
+function flashNTimes(elem, n, flashClass, duration, timeBetweenFlashes){
+    if (n <= 0) return;
+    if (elem.classList.contains(flashClass)) elem.classList.remove(flashClass);
 
-let started=false;
-let num_presses = -1;
-bigDiv.addEventListener("click", function(event){
-    if (started && event.target != blackBtn){
-        num_presses ++;
-        if (event.target == sequence[num_presses]){btnFlash(event.target, "flash1");} 
-        else if (event.target != sequence[num_presses]){
-            Displayinfo.innerText = `Wrong guess! Click the black button to restart\nPrevious game ended on level ${level}`;
-            document.body.style.backgroundColor = "red";
-            bigDiv.classList.add("flash3");
-            setTimeout(()=>{
-                bigDiv.classList.add("flash3");
-                document.body.style.backgroundColor = "rgb(90, 81, 81)";
-            }, 300);
-            started=false;
-            sequence = [];
-            num_presses = -1;
-            level = 0;
-        } 
-    } 
-    else if(!started && event.target == blackBtn){
-            incrementLevel()
-            started=true;
-            flashRandomColor();
-    }
-
-    if (started && num_presses == sequence.length-1){
-        Displayinfo.innerText = "Nice play! Proceeding to next level...";
+    let delay = 0;
+    for (let i = 0; i < n; i++){
         setTimeout(() => {
-            incrementLevel();
-            num_presses = -1;
-            flashGameSeq();
-        }, 1000);
+            elem.classList.add(flashClass);
+        }, delay);
+        delay += duration;
+        setTimeout(() => {
+            elem.classList.remove(flashClass);
+        }, delay);
+        delay += timeBetweenFlashes;
     }
-    
-});
+}
 
+// Start Game
+black.addEventListener('click', function(){
+    if (gameStarted || restarting) return;
+    gameStarted = true;
+    let randIdx = Math.floor(Math.random() * btns.length);
+
+    title.innerText = "Starting Game...";
+    setTimeout(() => {
+        title.innerText = `Level: ${level+1}`;
+        black.textContent = "Double Click to Restart";
+    }, 800);
+    setTimeout(() => {
+        flashNTimes(btns[randIdx], 2, "flash", 200, 100);
+    }, 900);
+    seq.push(btns[randIdx]);
+})
+
+
+function advanceLevel(){
+    gameStarted = false; restarting = true;
+    
+    scoreDisplay.innerText = `Current Score: ${++level}`;
+    title.innerText = `Level: ${level + 1}`;
+    highScore = Math.max(highScore, level);
+    highScoreDisplay.innerText = `Current High Score: ${highScore}`;
+
+    let randIdx = Math.floor(Math.random() * btns.length), delay = 300;
+    seq.push(btns[randIdx]);
+
+    for (let i = 0; i < seq.length; i++){
+        setTimeout(() => {
+            flashNTimes(seq[i], 1, "flash", 200, 0);
+        }, delay);
+        delay += (300);
+    }
+    setTimeout(() => {
+        flashNTimes(btns[randIdx], 2);
+        gameStarted = true; restarting = false;
+    }, 300*(seq.length+1));
+}
+
+function wrongAnswer(){
+    title.innerText = "Khel Khatam!";
+    flashNTimes(body, 3, "flash-red", 200, 150);
+    for (let b of btns) flashNTimes(b, 3, "flash", 200, 150);
+}
+
+let idx = 0;
+for (let btn of btns){
+    btn.addEventListener("click", function(){
+        if (!gameStarted || restarting) return;
+
+        if (btn == seq[idx++]){
+            if (idx == seq.length) {
+                advanceLevel(); 
+                idx = 0;
+            }
+        } else{
+            idx = 0; restarting = true; gameStarted = false;
+            wrongAnswer();
+            setTimeout(() => {
+                restartGame();
+            }, 3*(200 + 150));
+        }
+    })
+}
